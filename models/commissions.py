@@ -9,6 +9,11 @@ class Commissions(models.Model):
     _inherit = ['mail.thread']
     _order = 'date DESC'
 
+    uid = fields.Char(
+        'UID', required=True, readonly=True, copy=False,
+        default=lambda self: self.env['ir.sequence'].next_by_code(
+            'commissions.commissions')
+    )
     seller = fields.Many2one(
         'res.users', string='Vendedores', tracking=True, required=True
     )

@@ -1,5 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
 <odoo>
+    <record id="seq_commissions_uid" model="ir.sequence">
+        <field name="name">Comisiones</field>
+        <field name="code">commissions.commissions</field>
+        <field name="prefix">CO-</field>
+        <field name="padding">5</field>
+        <field name="number_increment">1</field>
+    </record>
+
     <record id="commissions_commissions_view_form" model="ir.ui.view">
         <field name="name">commissions.commissions.form</field>
         <field name="model">commissions.commissions</field>
@@ -7,6 +15,7 @@
             <form string="Comisión">
                 <sheet>
                     <div class="oe_title">
+                        <field name="uid" invisible="not uid" />
                         <h1>
                             <field name="seller" readonly="1" />
                         </h1>
@@ -33,6 +42,7 @@
         <field name="model">commissions.commissions</field>
         <field name="arch" type="xml">
             <list string="Comisiones" create="0" delete="0">
+                <field name="uid" readonly="1" />
                 <field name="seller" readonly="1" />
                 <field name="plan_ids" widget="many2many_tags" readonly="1" />
                 <field name="sale_id" readonly="1" />
