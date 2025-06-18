@@ -19,6 +19,6 @@
         'views/plans_view.xml',
     ],
     'auto_install': False,
-    'application': True,
+    'application': False,
     'sequence': 0,
 }
