@@ -1,0 +1,41 @@
+# -*- coding: utf-8 -*-
+
+from odoo import models, fields, api
+from datetime import datetime
+
+
+class CommissionInvoice(models.Model):
+    _inherit = 'account.move'
+
+    def action_post(self):
+        res = super().action_post()
+        plans_ids = self.env['commissions.sellers'].search(
+            [('seller.id', '=', self.user_id.id),]
+        )
+        approved_plans = plans_ids.mapped('plan_id').filtered(
+            lambda p: p.state == 'approved'
+        )
+
+        for plan in approved_plans:
+            if plan.date_to and plan.date_to < datetime.today().date():
+                plan.write({'state': 'done'})
+                continue
+
+            if self.user_id.id not in plan.sellers_ids.seller.ids:
+                continue
+
+            for achievement in plan.achievement_ids:
+                if achievement.achievements_type != 'amount_invoiced':
+                    continue
+
+                self.env['commissions.commissions'].create(
+                    {
+                        'seller': self.user_id.id,
+                        'date': datetime.today(),
+                        'commission': self.amount_total * achievement.rate,
+                        'plan_ids': plans_ids.ids,
+                        'invoice_id': self.id
+                    }
+                )
+
+        return res
