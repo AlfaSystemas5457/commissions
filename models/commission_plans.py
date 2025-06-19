@@ -77,6 +77,7 @@ class CommissionsPlans(models.Model):
 class CommissionsAchievements(models.Model):
     _name = 'commissions.achievements'
     _description = 'Logros de comisiones'
+    _rec_name = 'display_name'
 
     plan_id = fields.Many2one(
         'commissions.plans', required=True, ondelete='cascade')
@@ -84,9 +85,10 @@ class CommissionsAchievements(models.Model):
         [
             ('amount_invoiced', "Cantidad facturada"),
             ('amount_sold', "Cantidad vendida"),
-            # Cantidad de producto creo
-            # ('qty_invoiced', "Cantidad facturada"),
-            # ('qty_sold', "Cantidad vendida"),
+            # ('amount_paid', "Cantidad pagada"),
+            # ('amount_refunded', "Cantidad reembolsada"),
+            # ('amount_credited', "Cantidad acreditada"),
+            # ('amount_canceled', "Cantidad cancelada"),
         ], string='Tipo', required=True
     )
     product_id = fields.Many2one('product.product', string='Producto')
@@ -95,17 +97,39 @@ class CommissionsAchievements(models.Model):
     )
     rate = fields.Float('Tasa', digits=(16, 2), required=True)
 
+    display_name = fields.Char(
+        compute='_compute_display_name'
+    )
+
+    @api.depends('achievements_type', 'product_id', 'product_category_id', 'rate')
+    def _compute_display_name(self):
+        for record in self:
+            type_label = dict(self._fields['achievements_type'].selection).get(
+                record.achievements_type, '')
+            parts = [type_label]
+
+            if record.product_id:
+                parts.append(f"- {record.product_id.name}")
+            elif record.product_category_id:
+                parts.append(f"- {record.product_category_id.name}")
+
+            parts.append(f"- {record.rate}%")
+
+            record.display_name = ' '.join(parts)
+
 
 class CommissionsSellers(models.Model):
     _name = 'commissions.sellers'
     _description = 'Vendedores'
+    _rec_name = 'seller'
 
     plan_id = fields.Many2one(
         'commissions.plans', required=True, ondelete='cascade')
     seller = fields.Many2one('res.users', string='Vendedor', required=True)
     date_from = fields.Date(
         'Desde', compute='_compute_date_from', store=True, readonly=False)
-    date_to = fields.Date('Hasta')
+    date_to = fields.Date(
+        'Hasta', compute='_compute_date_to', store=True, readonly=False)
     other_plans = fields.Many2many(
         'commissions.plans',
         string='Otros planes',
@@ -140,3 +164,14 @@ class CommissionsSellers(models.Model):
                 return
             user.date_from = max(
                 user.plan_id.date_from, today) if user.plan_id.state != 'draft' else user.plan_id.date_from
+
+    @api.depends('plan_id')
+    def _compute_date_to(self):
+        today = fields.Date.today()
+        for user in self:
+            if user.date_to:
+                return
+            if not user.plan_id.date_to:
+                return
+            user.date_to = max(
+                user.plan_id.date_to, today) if user.plan_id.state != 'draft' else user.plan_id.date_to

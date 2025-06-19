@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api
+from odoo import models
 from datetime import datetime
 
 
@@ -26,6 +26,36 @@ class CommissionInvoice(models.Model):
 
             for achievement in plan.achievement_ids:
                 if achievement.achievements_type != 'amount_invoiced':
+                    continue
+
+                if achievement.product_id:
+                    product_line = self.invoice_line_ids.filtered(
+                        lambda l: l.product_id == achievement.product_id)
+
+                    self.env['commissions.commissions'].create(
+                        {
+                            'seller': self.user_id.id,
+                            'date': datetime.today(),
+                            'commission': sum([data.price_subtotal * achievement.rate for data in product_line]),
+                            'plan_ids': plans_ids.ids,
+                            'invoice_id': self.id
+                        }
+                    )
+                    continue
+
+                if achievement.product_category_id:
+                    product_categ_line = self.invoice_line_ids.filtered(
+                        lambda l: l.product_id.categ_id == achievement.product_category_id)
+
+                    self.env['commissions.commissions'].create(
+                        {
+                            'seller': self.user_id.id,
+                            'date': datetime.today(),
+                            'commission': sum([data.price_subtotal * achievement.rate for data in product_categ_line]),
+                            'plan_ids': plans_ids.ids,
+                            'invoice_id': self.id
+                        }
+                    )
                     continue
 
                 self.env['commissions.commissions'].create(
