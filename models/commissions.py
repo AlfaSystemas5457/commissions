@@ -8,6 +8,7 @@ class Commissions(models.Model):
     _description = 'Comisión'
     _inherit = ['mail.thread']
     _order = 'date DESC'
+    _rec_name = 'display_name'
 
     uid = fields.Char(
         'UID', required=True, readonly=True, copy=False,
@@ -28,3 +29,12 @@ class Commissions(models.Model):
         'sale.order', string='Venta', tracking=True)
     invoice_id = fields.Many2one(
         'account.move', string='Factura', tracking=True)
+
+    display_name = fields.Char(
+        compute='_compute_display_name'
+    )
+
+    @api.depends('seller', 'date', 'uid')
+    def _compute_display_name(self):
+        for record in self:
+            record.display_name = f'{record.uid} - {record.seller.name} - {record.date.strftime("%d/%m/%Y %H:%M:%S")}'
