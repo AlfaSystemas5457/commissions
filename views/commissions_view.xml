@@ -55,6 +55,7 @@
 
     <record id="commissions_commissions_action" model="ir.actions.act_window">
         <field name="name">Comisiones</field>
+        <field name="type">ir.actions.act_window</field>
         <field name="res_model">commissions.commissions</field>
         <field name="view_mode">list,form</field>
         <field name="help" type="html">

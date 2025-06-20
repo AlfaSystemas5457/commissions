@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <!-- 🔒 Regla para usuarios con acceso limitado (solo comisiones asignadas) -->
+    <record id="rule_commissions_assigned_only" model="ir.rule">
+        <field name="name">Ver solo comisiones asignadas</field>
+        <field name="model_id" ref="model_commissions_commissions" />
+        <field name="domain_force">[('seller.id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('commissions.group_commissions_access_assigned'))]" />
+        <field name="perm_create" eval="True" />
+        <field name="perm_read" eval="True" />
+        <field name="perm_write" eval="True" />
+        <field name="perm_unlink" eval="False" />
+    </record>
+
+    <record id="rule_commissions_plans_assigned_none" model="ir.rule">
+        <field name="name">No ver planes de comisión</field>
+        <field name="model_id" ref="model_commissions_plans" />
+        <field name="domain_force">[("id", "=", -1)]</field>
+        <field name="groups" eval="[(4, ref('commissions.group_commissions_access_assigned'))]" />
+        <field name="perm_create" eval="False" />
+        <field name="perm_read" eval="True" />
+        <field name="perm_write" eval="False" />
+        <field name="perm_unlink" eval="False" />
+    </record>
+
+    <!-- 🔓 Regla para usuarios con acceso total (ver todas las comisiones) -->
+    <record id="rule_commissions_access_all" model="ir.rule">
+        <field name="name">Ver todas las comisiones</field>
+        <field name="model_id" ref="model_commissions_commissions" />
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('commissions.group_commissions_access_all'))]" />
+        <field name="perm_create" eval="False" />
+        <field name="perm_read" eval="True" />
+        <field name="perm_write" eval="True" />
+        <field name="perm_unlink" eval="True" />
+    </record>
+
+    <record id="rule_commissions_plans_access_all" model="ir.rule">
+        <field name="name">Ver todas las comisiones</field>
+        <field name="model_id" ref="model_commissions_plans" />
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('commissions.group_commissions_access_all'))]" />
+        <field name="perm_create" eval="False" />
+        <field name="perm_read" eval="True" />
+        <field name="perm_write" eval="True" />
+        <field name="perm_unlink" eval="True" />
+    </record>
+</odoo>

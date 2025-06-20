@@ -60,6 +60,17 @@ class CommissionsPlans(models.Model):
         string='Vendedores',
         tracking=True,
     )
+    sellers_tags = fields.Many2many(
+        'res.users',
+        string='Vendedores',
+        compute='_compute_sellers_tags',
+        store=False
+    )
+
+    @api.depends('sellers_ids.seller')
+    def _compute_sellers_tags(self):
+        for record in self:
+            record.sellers_tags = record.sellers_ids.mapped('seller')
 
     def handle_approved(self):
         self.state = 'approved'

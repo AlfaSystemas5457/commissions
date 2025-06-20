@@ -37,7 +37,7 @@ class CommissionSale(models.Model):
                             'seller': self.user_id.id,
                             'date': datetime.today(),
                             'commission': sum([data.price_subtotal * achievement.rate for data in product_line]),
-                            'plan_ids': plans_ids.ids,
+                            'plan_ids': approved_plans.ids,
                             'sale_id': self.id
                         }
                     )
@@ -52,7 +52,7 @@ class CommissionSale(models.Model):
                             'seller': self.user_id.id,
                             'date': datetime.today(),
                             'commission': sum([data.price_subtotal * achievement.rate for data in product_categ_line]),
-                            'plan_ids': plans_ids.ids,
+                            'plan_ids': approved_plans.ids,
                             'sale_id': self.id
                         }
                     )
