@@ -1,5 +1,6 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_commissions_commissions,commissions.commissions,model_commissions_commissions,base.group_user,1,1,1,1
 access_commissions_plans,commissions.plans,model_commissions_plans,base.group_user,1,0,0,0
+access_commissions_plans_all,commissions.plans.all,model_commissions_plans,commissions.group_commissions_access_all,1,1,1,1
 access_commissions_achievements,commissions.achievements,model_commissions_achievements,base.group_user,1,1,1,1
 access_commissions_sellers,commissions.sellers,model_commissions_sellers,base.group_user,1,1,1,1
