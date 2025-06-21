@@ -122,7 +122,6 @@
         <field name="name">Planes de comisión</field>
         <field name="res_model">commissions.plans</field>
         <field name="view_mode">list,form</field>
-        <field name="groups_id" eval="[(4, ref('commissions.group_commissions_access_all'))]" />
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Aqui puedes gestionar tus planes de comisiones.
