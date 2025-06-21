@@ -20,6 +20,7 @@
         'views/manu_view.xml',
         'views/commissions_view.xml',
         'views/plans_view.xml',
+        'views/user_id_view.xml',
     ],
     'post_init_hook': 'post_init_hook',
     'auto_install': False,
