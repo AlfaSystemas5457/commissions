@@ -13,9 +13,9 @@
         'sale',
     ],
     'data': [
-        'security/ir.model.access.csv',
         'security/groups_security.xml',
         'security/commission_security.xml',
+        'security/ir.model.access.csv',
         'views/res_users_views.xml',
         'views/manu_view.xml',
         'views/commissions_view.xml',
