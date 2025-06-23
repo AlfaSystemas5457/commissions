@@ -29,7 +29,7 @@ class CommissionsPlans(models.Model):
             ('approved', 'Aprobado'),
             ('done', 'Listo'),
             ('cancel', 'Cancelado'),
-        ], string='Estado', required=True, default='draft'
+        ], string='Estado', tracking=True, required=True, default='draft'
     )
 
     date_from = fields.Date(
