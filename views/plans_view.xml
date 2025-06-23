@@ -4,23 +4,26 @@
         <field name="name">commissions.plans.view.form</field>
         <field name="model">commissions.plans</field>
         <field name="arch" type="xml">
-            <form string="">
+            <form string="" groups="commissions.group_commissions_access_all">
                 <header>
                     <button string="Aprobar"
                         name="handle_approved"
                         type="object"
                         invisible="state != 'draft'"
-                        class="oe_highlight" />
+                        class="oe_highlight"
+                        groups="commissions.group_commissions_access_all" />
                     <button string="Hecho"
                         name="handle_done"
                         type="object"
                         invisible="state != 'approved'"
-                        class="oe_highlight" />
+                        class="oe_highlight"
+                        groups="commissions.group_commissions_access_all" />
                     <button string="Cancelar"
                         name="handle_cancel"
                         type="object"
                         invisible="state != 'approved'"
-                        class="btn-secondary" />
+                        class="btn-secondary"
+                        groups="commissions.group_commissions_access_all" />
                     <button string="Borrador"
                         name="handle_draft"
                         type="object"
@@ -95,6 +98,7 @@
                 <chatter />
             </form>
         </field>
+        <field name="groups_id" eval="[(4, ref('commissions.group_commissions_access_all'))]" />
     </record>
 
     <record id="commissions_plans_view_list" model="ir.ui.view">
@@ -122,6 +126,7 @@
         <field name="name">Planes de comisión</field>
         <field name="res_model">commissions.plans</field>
         <field name="view_mode">list,form</field>
+        <field name="groups_id" eval="[(4, ref('commissions.group_commissions_access_all'))]" />
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Aqui puedes gestionar tus planes de comisiones.
