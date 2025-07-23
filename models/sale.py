@@ -63,7 +63,7 @@ class CommissionSale(models.Model):
                         'seller': self.user_id.id,
                         'date': datetime.today(),
                         'commission': self.amount_total * achievement.rate,
-                        'plan_ids': plans_ids.ids,
+                        'plan_ids': approved_plans.ids,
                         'sale_id': self.id
                     }
                 )
