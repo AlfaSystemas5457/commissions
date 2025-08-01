@@ -54,7 +54,7 @@
                             <label for="date_from" string="Periodo efectivo" />
                             <div>
                                 <field name="date_from" class="oe_inline"
-                                    readonly="state != 'draft'"
+                                    readonly="1"
                                     force_save="1" />
                                 <i class="oi oi-fw oi-arrow-right" />
                                 <field name="date_to" class="oe_inline" readonly="state != 'draft'"
