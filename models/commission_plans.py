@@ -33,7 +33,7 @@ class CommissionsPlans(models.Model):
     )
 
     date_from = fields.Date(
-        'Fecha inicial', default=date.today(), required=True, tracking=True)
+        'Fecha inicial', default=lambda self: date.today(), required=True, tracking=True)
     date_to = fields.Date('Fecha Final', tracking=True)
 
     Freq_target = fields.Selection(
