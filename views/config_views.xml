@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <record id="commissions_config_settings_view_form" model="ir.ui.view">
+        <field name="name">commissions.config.settings.view.form</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="sale.res_config_settings_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//block[@name='catalog_setting_container']" position="before">
+                <block title="Comisiones" name="commissions_setting_container">
+                    <setting name="account_expense_id" title="Cuenta de gasto"
+                        help="Cuenta utilizada para registrar los gastos de comisiones.">
+                        <field name="account_expense_id" />
+                    </setting>
+                    <setting name="account_payable_id" title="Cuenta por pagar"
+                        help="Cuenta utilizada para registrar las cuentas por pagar de comisiones.">
+                        <field name="account_payable_id" />
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>

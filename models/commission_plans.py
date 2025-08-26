@@ -67,6 +67,9 @@ class CommissionsPlans(models.Model):
         store=False
     )
 
+    general_employee = fields.Boolean(
+        'Aplicar a empleados en general?', default=False, tracking=True)
+
     @api.depends('sellers_ids.seller')
     def _compute_sellers_tags(self):
         for record in self:
@@ -106,13 +109,19 @@ class CommissionsAchievements(models.Model):
     product_category_id = fields.Many2one(
         'product.category', string='Categoria'
     )
-    rate = fields.Float('Tasa', digits=(16, 2), required=True)
+    amount = fields.Float('Monto', digits=(16, 2), required=True)
+    type_amount = fields.Selection(
+        [
+            ('fixed', 'Fijo'),
+            ('percentage', 'Porcentaje'),
+        ], string='Tipo de monto', required=True, default='percentage'
+    )
 
     display_name = fields.Char(
         compute='_compute_display_name'
     )
 
-    @api.depends('achievements_type', 'product_id', 'product_category_id', 'rate')
+    @api.depends('achievements_type', 'product_id', 'product_category_id', 'amount', 'type_amount')
     def _compute_display_name(self):
         for record in self:
             type_label = dict(self._fields['achievements_type'].selection).get(
@@ -124,7 +133,8 @@ class CommissionsAchievements(models.Model):
             elif record.product_category_id:
                 parts.append(f"- {record.product_category_id.name}")
 
-            parts.append(f"- {record.rate}%")
+            parts.append(
+                f"- {record.amount} {'%' if record.type_amount == 'percentage' else ''}")
 
             record.display_name = ' '.join(parts)
 

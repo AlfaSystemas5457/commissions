@@ -16,6 +16,7 @@
         'security/groups_security.xml',
         'security/commission_security.xml',
         'security/ir.model.access.csv',
+        'views/config_views.xml',
         'views/res_users_views.xml',
         'views/manu_view.xml',
         'views/commissions_view.xml',

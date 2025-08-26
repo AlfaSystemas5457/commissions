@@ -9,12 +9,9 @@ class CommissionSale(models.Model):
 
     def action_confirm(self):
         res = super().action_confirm()
-        plans_ids = self.env['commissions.sellers'].search(
-            [('seller.id', '=', self.user_id.id),]
-        )
-        approved_plans = plans_ids.mapped('plan_id').filtered(
-            lambda p: p.state == 'approved'
-        )
+        approved_plans = self.env['commissions.sellers'].search(
+            [('plan_id.state', 'in', ['approved'])]
+        ).mapped('plan_id')
 
         for plan in approved_plans:
             if plan.date_to and plan.date_to < datetime.today().date():
@@ -36,7 +33,8 @@ class CommissionSale(models.Model):
                         {
                             'seller': self.user_id.id,
                             'date': datetime.today(),
-                            'commission': sum([data.price_subtotal * achievement.rate for data in product_line]),
+                            'commission': sum([achievement.amount if achievement.type_amount == 'fixed' else data.price_subtotal * achievement.amount for data in product_line]),
+                            'commission_type': achievement.type_amount,
                             'plan_ids': approved_plans.ids,
                             'sale_id': self.id
                         }
@@ -51,18 +49,23 @@ class CommissionSale(models.Model):
                         {
                             'seller': self.user_id.id,
                             'date': datetime.today(),
-                            'commission': sum([data.price_subtotal * achievement.rate for data in product_categ_line]),
+                            'commission': sum([achievement.amount if achievement.type_amount == 'fixed' else data.price_subtotal * achievement.amount for data in product_categ_line]),
+                            'commission_type': achievement.type_amount,
                             'plan_ids': approved_plans.ids,
                             'sale_id': self.id
                         }
                     )
                     continue
 
+                if not plan.general_employee and self.user_id.id not in plan.sellers_ids.seller.ids:
+                    continue
+
                 self.env['commissions.commissions'].create(
                     {
                         'seller': self.user_id.id,
                         'date': datetime.today(),
-                        'commission': self.amount_total * achievement.rate,
+                        'commission': achievement.amount if achievement.type_amount == 'fixed' else self.amount_total * achievement.amount,
+                        'commission_type': achievement.type_amount,
                         'plan_ids': approved_plans.ids,
                         'sale_id': self.id
                     }

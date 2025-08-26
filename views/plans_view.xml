@@ -62,6 +62,9 @@
                             </div>
                             <!-- <field name="Freq_target" readonly="state != 'draft'" /> -->
                         </group>
+                        <group>
+                            <field name="general_employee" widget="boolean_toggle" />
+                        </group>
                     </group>
                     <notebook>
                         <page string="Logros">
@@ -74,11 +77,12 @@
                                     <field name="achievements_type" />
                                     <field name="product_id" />
                                     <field name="product_category_id" />
-                                    <field name="rate" widget="percentage" />
+                                    <field name="amount" />
+                                    <field name="type_amount" />
                                 </list>
                             </field>
                         </page>
-                        <page string="Vendedores">
+                        <page string="Vendedores" invisible="general_employee">
                             <field name="sellers_ids"
                                 readonly="state != 'draft'">
                                 <list editable="bottom">

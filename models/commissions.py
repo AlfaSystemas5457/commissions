@@ -24,6 +24,11 @@ class Commissions(models.Model):
     #     'Cantidad objetivo', tracking=True, digits=(16, 2)
     # )
     commission = fields.Float('Comisión', tracking=True, required=True)
+    commission_type = fields.Selection(
+        [
+            ('fixed', 'Fijo'),
+            ('percentage', 'Porcentaje'),
+        ], string='Tipo de comisión', default='fixed', tracking=True, required=True)
     plan_ids = fields.Many2many(
         'commissions.plans', string='Planes', ondelete='restrict', required=True)
     sale_id = fields.Many2one(
@@ -52,12 +57,13 @@ class Commissions(models.Model):
                     "La comisión debe tener un valor mayor a cero.")
 
             # Cuentas contables
-            account_commission_expense = self.env['account.account'].search(
-                [('code', '=', '601.74.01')], limit=1)
-            account_payable = self.env['account.account'].search(
-                [('code', '=', '210.01.01')], limit=1)
+            account_commission_expense = self.env['ir.config_parameter'].get_param(
+                'commissions.account_expense_id')
 
-            if not account_commission_expense or not account_payable:
+            account_payable = self.env['ir.config_parameter'].get_param(
+                'commissions.account_payable_id')
+
+            if not account_payable or not account_commission_expense:
                 raise UserError(
                     "No se encontraron las cuentas contables necesarias.")
 
@@ -69,14 +75,14 @@ class Commissions(models.Model):
                     (0, 0, {
                         'name': 'Gasto por comisión',
                         'account_id': account_commission_expense.id,
-                        'debit': record.commission,
+                        'debit': record.commission if record.commission_type == 'fixed' else record.sale_id.amount_untaxed * (record.commission / 100),
                         'credit': 0.0,
                     }),
                     (0, 0, {
                         'name': f'Comisión a {record.seller.name}',
                         'account_id': account_payable.id,
                         'debit': 0.0,
-                        'credit': record.commission,
+                        'credit': record.commission if record.commission_type == 'fixed' else record.sale_id.amount_untaxed * (record.commission / 100),
                         'partner_id': record.seller.partner_id.id,
                     }),
                 ],
@@ -86,3 +92,25 @@ class Commissions(models.Model):
             move.action_post()  # Asiento contable
 
             record.paid = True
+
+
+class CommissionsConfig(models.TransientModel):
+    _inherit = 'res.config.settings'
+
+    account_expense_id = fields.Many2one(
+        'account.account',
+        string='Cuenta de gasto',
+        config_parameter='commissions.account_expense_id',
+        default=lambda self: self.env['account.account'].search(
+            [
+                ('code', '=', '601.74.01')
+            ], limit=1), store=True)
+
+    account_payable_id = fields.Many2one(
+        'account.account',
+        string='Cuenta por pagar',
+        config_parameter='commissions.account_payable_id',
+        default=lambda self: self.env['account.account'].search(
+            [
+                ('code', '=', '210.01.01')
+            ], limit=1), store=True)
