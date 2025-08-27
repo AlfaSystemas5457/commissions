@@ -2,6 +2,7 @@
 
 from odoo import models, fields, api
 from odoo.exceptions import UserError
+from markupsafe import Markup
 
 
 class Commissions(models.Model):
@@ -17,7 +18,7 @@ class Commissions(models.Model):
             'commissions.commissions')
     )
     seller = fields.Many2one(
-        'res.users', string='Vendedores', tracking=True, required=True
+        'res.users', string='Vendedor', tracking=True, required=True
     )
     date = fields.Datetime('Fecha')
     # target_amount = fields.Float(
@@ -57,15 +58,21 @@ class Commissions(models.Model):
                     "La comisión debe tener un valor mayor a cero.")
 
             # Cuentas contables
-            account_commission_expense = self.env['ir.config_parameter'].get_param(
+            param_account_commission_expense = self.env['ir.config_parameter'].get_param(
                 'commissions.account_expense_id')
 
-            account_payable = self.env['ir.config_parameter'].get_param(
+            param_account_payable = self.env['ir.config_parameter'].get_param(
                 'commissions.account_payable_id')
+
+            account_payable = self.env['account.account'].search(
+                [('code', '=', param_account_payable)], limit=1)
+
+            account_commission_expense = self.env['account.account'].search(
+                [('code', '=', param_account_commission_expense)], limit=1)
 
             if not account_payable or not account_commission_expense:
                 raise UserError(
-                    "No se encontraron las cuentas contables necesarias.")
+                    f"No se encontraron las cuentas contables necesarias. {self.env['ir.config_parameter'].sudo().get_param('commissions.account_expense_id')}")
 
             move_vals = {
                 'ref': f'Pago de comisión {record.uid}',
@@ -75,14 +82,14 @@ class Commissions(models.Model):
                     (0, 0, {
                         'name': 'Gasto por comisión',
                         'account_id': account_commission_expense.id,
-                        'debit': record.commission if record.commission_type == 'fixed' else record.sale_id.amount_untaxed * (record.commission / 100),
+                        'debit': record.commission if record.commission_type == 'fixed' else record.sale_id.amount_untaxed * (record.commission / 100) if record.sale_id else record.invoice_id.amount_untaxed * (record.commission / 100),
                         'credit': 0.0,
                     }),
                     (0, 0, {
                         'name': f'Comisión a {record.seller.name}',
                         'account_id': account_payable.id,
                         'debit': 0.0,
-                        'credit': record.commission if record.commission_type == 'fixed' else record.sale_id.amount_untaxed * (record.commission / 100),
+                        'credit': record.commission if record.commission_type == 'fixed' else record.sale_id.amount_untaxed * (record.commission / 100) if record.sale_id else record.invoice_id.amount_untaxed * (record.commission / 100),
                         'partner_id': record.seller.partner_id.id,
                     }),
                 ],
@@ -91,26 +98,28 @@ class Commissions(models.Model):
             move = self.env['account.move'].create(move_vals)
             move.action_post()  # Asiento contable
 
-            record.paid = True
+            record.write({'paid': True})
 
+            # Mensaje en el chatter
+            sale_link = f"/web#id={record.sale_id.id}&model=sale.order" if record.sale_id else ""
+            invoice_link = f"/web#id={record.invoice_id.id}&model=account.move" if record.invoice_id else ""
 
-class CommissionsConfig(models.TransientModel):
-    _inherit = 'res.config.settings'
+            # El cuerpo del mensaje, con enlace a la venta o factura
+            message_body = f"""
+            <p>Se ha pagado la comisión correspondiente.</p>
+            <p><b>Comisión Pagada:</b> {record.commission if record.commission_type == 'fixed' else record.sale_id.amount_untaxed * (record.commission / 100) if record.sale_id else record.invoice_id.amount_untaxed * (record.commission / 100)}</p>
+            <p><b>Vendedor:</b> {record.seller.name}</p>
+            <p><b>Fecha de pago:</b> {fields.Date.today()}</p>
+            <p><b>Documentos relacionado:</b></p>
+            <a href="/web#id={move.id}&model=account.move">Ver Asiento Contable {move.name}</a><br>
+            """
 
-    account_expense_id = fields.Many2one(
-        'account.account',
-        string='Cuenta de gasto',
-        config_parameter='commissions.account_expense_id',
-        default=lambda self: self.env['account.account'].search(
-            [
-                ('code', '=', '601.74.01')
-            ], limit=1), store=True)
+            if record.sale_id:
+                message_body += f'<a href="{sale_link}">Ver Pedido de Venta {record.sale_id.name}</a><br>'
 
-    account_payable_id = fields.Many2one(
-        'account.account',
-        string='Cuenta por pagar',
-        config_parameter='commissions.account_payable_id',
-        default=lambda self: self.env['account.account'].search(
-            [
-                ('code', '=', '210.01.01')
-            ], limit=1), store=True)
+            if record.invoice_id:
+                message_body += f'<a href="{invoice_link}">Ver Factura {record.invoice_id.name}</a><br>'
+
+            record.message_post(
+                body=Markup(message_body),
+            )

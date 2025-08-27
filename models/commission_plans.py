@@ -87,6 +87,13 @@ class CommissionsPlans(models.Model):
     def handle_draft(self):
         self.state = 'draft'
 
+    def copy(self, default=None):
+        """Override copy method to ensure UID is generated on duplicate."""
+        default = default or {}
+        default['name'] = f"{self.name} (Copia)"
+        default['state'] = f"draft"
+        return super(CommissionsPlans, self).copy(default)
+
 
 class CommissionsAchievements(models.Model):
     _name = 'commissions.achievements'

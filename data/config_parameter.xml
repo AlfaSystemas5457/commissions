@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <data noupdate="1">
+        <!-- Establecer el parámetro para la cuenta de gasto -->
+        <record id="commissions_account_expense_id" model="ir.config_parameter">
+            <field name="key">commissions.account_expense_id</field>
+            <field name="value">601.74.01</field>
+        </record>
+
+        <!-- Establecer el parámetro para la cuenta por pagar -->
+        <record id="commissions_account_payable_id" model="ir.config_parameter">
+            <field name="key">commissions.account_payable_id</field>
+            <field name="value">210.01.01</field>
+        </record>
+    </data>
+</odoo>

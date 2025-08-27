@@ -28,7 +28,16 @@
                         <h1>
                             <field name="seller" readonly="1" />
                         </h1>
+
+                        <h3 class="o_stat_value d-flex gap-1 text-center">
+                            <span>Comisión</span>
+                            <span invisible="commission_type == 'percentage'">$</span>
+                            <field readonly="paid" name="commission" />
+                            <span invisible="commission_type == 'fixed'">%</span>
+                            <field readonly="paid" name="commission_type" widget="selection" />
+                        </h3>
                     </div>
+                    <hr />
                     <group>
                         <group>
                             <field name="plan_ids" widget="many2many_tags" readonly="1" />
@@ -38,13 +47,10 @@
                         <group>
                             <field name="date" readonly="1" />
                             <field name="paid" readonly="1" />
-                            <div>
-                                <field name="commission" widget="monetary" />
-                                <field name="commission_type" />
-                            </div>
                         </group>
                     </group>
                 </sheet>
+                <chatter />
             </form>
         </field>
     </record>
@@ -54,13 +60,14 @@
         <field name="model">commissions.commissions</field>
         <field name="arch" type="xml">
             <list string="Comisiones" create="0" delete="0">
-                <field name="uid" readonly="1" />
+                <field name="uid" width="100" decoration-bf="1" />
                 <field name="seller" readonly="1" />
                 <field name="plan_ids" widget="many2many_tags" readonly="1" optional="show" />
                 <field name="sale_id" readonly="1" />
                 <field name="invoice_id" readonly="1" />
                 <field name="date" readonly="1" optional="show" />
                 <field name="paid" readonly="1" optional="show" />
+                <field name="commission_type" readonly="1" optional="show" />
                 <field name="commission" readonly="1" sum="Total Comisión" />
             </list>
         </field>

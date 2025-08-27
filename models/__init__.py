@@ -5,3 +5,5 @@ from . import commission_plans
 from . import sale
 from . import invoice
 from . import res_users
+from . import res_config
+from . import cron_model

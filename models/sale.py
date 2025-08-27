@@ -9,16 +9,16 @@ class CommissionSale(models.Model):
 
     def action_confirm(self):
         res = super().action_confirm()
-        approved_plans = self.env['commissions.sellers'].search(
-            [('plan_id.state', 'in', ['approved'])]
-        ).mapped('plan_id')
+        approved_plans = self.env['commissions.plans'].search(
+            [('state', 'in', ['approved'])]
+        )
 
         for plan in approved_plans:
             if plan.date_to and plan.date_to < datetime.today().date():
                 plan.write({'state': 'done'})
                 continue
 
-            if self.user_id.id not in plan.sellers_ids.seller.ids:
+            if not plan.general_employee and self.user_id.id not in plan.sellers_ids.seller.ids:
                 continue
 
             for achievement in plan.achievement_ids:
@@ -55,9 +55,6 @@ class CommissionSale(models.Model):
                             'sale_id': self.id
                         }
                     )
-                    continue
-
-                if not plan.general_employee and self.user_id.id not in plan.sellers_ids.seller.ids:
                     continue
 
                 self.env['commissions.commissions'].create(

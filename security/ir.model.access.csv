@@ -3,3 +3,4 @@ access_commissions_commissions,commissions.commissions,model_commissions_commiss
 access_commissions_plans,commissions.plans,model_commissions_plans,base.group_user,1,1,1,1
 access_commissions_achievements,commissions.achievements,model_commissions_achievements,base.group_user,1,1,1,1
 access_commissions_sellers,commissions.sellers,model_commissions_sellers,base.group_user,1,1,1,1
+access_commissions_cron,commissions.cron,model_commissions_cron,base.group_user,1,1,1,1
