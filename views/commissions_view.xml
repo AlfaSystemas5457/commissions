@@ -31,10 +31,8 @@
 
                         <h3 class="o_stat_value d-flex gap-1 text-center">
                             <span>Comisión</span>
-                            <span invisible="commission_type == 'percentage'">$</span>
+                            <span>$</span>
                             <field readonly="paid" name="commission" />
-                            <span invisible="commission_type == 'fixed'">%</span>
-                            <field readonly="paid" name="commission_type" widget="selection" />
                         </h3>
                     </div>
                     <hr />
@@ -67,7 +65,6 @@
                 <field name="invoice_id" readonly="1" />
                 <field name="date" readonly="1" optional="show" />
                 <field name="paid" readonly="1" optional="show" />
-                <field name="commission_type" readonly="1" optional="show" />
                 <field name="commission" readonly="1" sum="Total Comisión" />
             </list>
         </field>

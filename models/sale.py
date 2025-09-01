@@ -33,7 +33,7 @@ class CommissionSale(models.Model):
                         {
                             'seller': self.user_id.id,
                             'date': datetime.today(),
-                            'commission': sum([achievement.amount if achievement.type_amount == 'fixed' else data.price_subtotal * achievement.amount for data in product_line]),
+                            'commission': sum([achievement.amount if achievement.type_amount == 'fixed' else data.price_subtotal * (achievement.amount / 100) for data in product_line]),
                             'commission_type': achievement.type_amount,
                             'plan_ids': approved_plans.ids,
                             'sale_id': self.id
@@ -49,7 +49,7 @@ class CommissionSale(models.Model):
                         {
                             'seller': self.user_id.id,
                             'date': datetime.today(),
-                            'commission': sum([achievement.amount if achievement.type_amount == 'fixed' else data.price_subtotal * achievement.amount for data in product_categ_line]),
+                            'commission': sum([achievement.amount if achievement.type_amount == 'fixed' else data.price_subtotal * (achievement.amount / 100) for data in product_categ_line]),
                             'commission_type': achievement.type_amount,
                             'plan_ids': approved_plans.ids,
                             'sale_id': self.id
@@ -61,7 +61,7 @@ class CommissionSale(models.Model):
                     {
                         'seller': self.user_id.id,
                         'date': datetime.today(),
-                        'commission': achievement.amount if achievement.type_amount == 'fixed' else self.amount_total * achievement.amount,
+                        'commission': achievement.amount if achievement.type_amount == 'fixed' else self.amount_total * (achievement.amount / 100),
                         'commission_type': achievement.type_amount,
                         'plan_ids': approved_plans.ids,
                         'sale_id': self.id

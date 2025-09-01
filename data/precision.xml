@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <record id="add_precision_decimal" model="decimal.precision">
+        <field name="name">Decimales de comisiones</field>
+        <field name="digits">2</field>
+    </record>
+</odoo>

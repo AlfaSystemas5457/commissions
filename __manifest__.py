@@ -16,6 +16,7 @@
         'security/groups_security.xml',
         'security/commission_security.xml',
         'security/ir.model.access.csv',
+        'data/precision.xml',
         'data/config_parameter.xml',
         'data/cron.xml',
         'views/config_views.xml',
