@@ -12,7 +12,7 @@
         <field name="name">commissions.commissions.form</field>
         <field name="model">commissions.commissions</field>
         <field name="arch" type="xml">
-            <form string="Comisión" duplicate="0">
+            <form string="Comisión" duplicate="0" delete="0">
                 <header>
                     <button string="Marcar como pagado"
                         name="handle_paid"

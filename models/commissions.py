@@ -24,7 +24,8 @@ class Commissions(models.Model):
     # target_amount = fields.Float(
     #     'Cantidad objetivo', tracking=True, digits=(16, 2)
     # )
-    commission = fields.Float('Comisión', tracking=True, required=True)
+    commission = fields.Float(
+        'Comisión', tracking=True, required=True, digits='Commission decimals')
     commission_type = fields.Selection(
         [
             ('fixed', 'Fijo'),
@@ -70,9 +71,6 @@ class Commissions(models.Model):
             account_commission_expense = self.env['account.account'].search(
                 [('code', '=', param_account_commission_expense)], limit=1)
 
-            deimal_precision = self.env['decimal.precision'].search(
-                [('name', '=', 'Decimales de comisiones')], limit=1) or 2
-
             if not account_payable or not account_commission_expense:
                 raise UserError(
                     f"No se encontraron las cuentas contables necesarias. {self.env['ir.config_parameter'].sudo().get_param('commissions.account_expense_id')}")
@@ -110,7 +108,7 @@ class Commissions(models.Model):
             # El cuerpo del mensaje, con enlace a la venta o factura
             message_body = f"""
             <p>Se ha pagado la comisión correspondiente.</p>
-            <p><b>Comisión Pagada:</b> {round(record.commission, deimal_precision.digits)}</p>
+            <p><b>Comisión Pagada:</b> {record.commission}</p>
             <p><b>Vendedor:</b> {record.seller.name}</p>
             <p><b>Fecha de pago:</b> {fields.Date.today().strftime("%d-%m-%Y")}</p>
             <p><b>Documentos relacionado:</b></p>
