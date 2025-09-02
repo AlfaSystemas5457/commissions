@@ -65,7 +65,7 @@ class CommissionInvoice(models.Model):
                     {
                         'seller': self.user_id.id,
                         'date': datetime.today(),
-                        'commission': achievement.amount if achievement.type_amount == 'fixed' else self.amount_total * (achievement.amount / 100),
+                        'commission': achievement.amount if achievement.type_amount == 'fixed' else self.amount_untaxed * (achievement.amount / 100),
                         'commission_type': achievement.type_amount,
                         'plan_ids': approved_plans.ids,
                         'invoice_id': self.id
